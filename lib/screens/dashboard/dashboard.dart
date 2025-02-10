@@ -12,16 +12,16 @@ final String username = "trOlsz";
 
 final helloMsgStyle = TextStyle(
   height: 1.8,
-  fontSize: 30.0,
-  fontFamily: 'Abyssinica_SIL',
-  fontWeight: FontWeight.w400,
+  fontSize: 32.0,
+  fontFamily: 'Klee_One',
+  fontWeight: FontWeight.w500,
   color: Color(0xFF1F1F1F),
 );
 
 final usernameStyle = TextStyle(
   height: 1.8,
-  fontSize: 30.0,
-  fontFamily: 'hind',
+  fontSize: 32.0,
+  fontFamily: 'Klee_One',
   fontWeight: FontWeight.w500,
   color: Color(0xFF4EABCC),
 );
@@ -48,9 +48,8 @@ final taskListTextStyle = TextStyle(
 );
 
 final taskTitleTextField = TextStyle(
-  fontSize: 32.0,
+  fontSize: 24.0,
   fontFamily: 'Hind',
-  fontWeight: FontWeight.bold,
   color: Color(0xFF1F1F1F),
 );
 
@@ -115,14 +114,14 @@ class _DashboardState extends State<Dashboard> {
                 child: BoxSearchBar(),
               ),
               Container(
-                margin: EdgeInsets.symmetric(horizontal: 10.0),
+                margin: EdgeInsets.symmetric(horizontal: 6.0),
                 padding: EdgeInsets.only(top: 30.0, bottom: 20.0),
                 child: Container(
                   padding: EdgeInsets.all(10.0),
                   decoration: BoxDecoration(
                     color: Color(0xFFFFFFFF),
                     border: Border.all(
-                      color: Color(0xFFDDDFE5),
+                      color: Color(0x40000000),
                       width: 2.0,
                     ),
                     borderRadius: BorderRadius.circular(6.0),
@@ -138,6 +137,7 @@ class _DashboardState extends State<Dashboard> {
                     style: taskTitleTextField,
                   ),
                   IconButton(
+                    constraints: BoxConstraints(maxHeight: 36),
                     color: Color(0xFFFFFFFF),
                     onPressed: () {
                       Navigator.push(
@@ -147,19 +147,21 @@ class _DashboardState extends State<Dashboard> {
                         ),
                       );
                     },
-                    icon: Icon(Icons.add),
+                    icon: Icon(Icons.add_rounded, size: 24.0),
                     style: IconButton.styleFrom(
                       backgroundColor: Color(0xFF4EABCC),
+                      padding: EdgeInsets.all(0.0),
                     ),
                   ),
                 ],
               ),
               Container(
-                padding: EdgeInsets.all(10.0),
+                margin: EdgeInsets.symmetric(horizontal: 6.0),
+                padding: EdgeInsets.fromLTRB(10.0,20.0,20.0,10.0),
                 decoration: BoxDecoration(
                   color: Color(0xFFFFFFFF),
                   border: Border.all(
-                    color: Color(0xFFDDDFE5),
+                    color: Color(0x40000000),
                     width: 2.0,
                   ),
                   borderRadius: BorderRadius.circular(6.0),

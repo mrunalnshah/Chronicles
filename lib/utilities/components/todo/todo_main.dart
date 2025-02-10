@@ -4,6 +4,7 @@ import 'package:chronicles/utilities/components/todo/completed_todo.dart';
 import 'package:flutter/material.dart';
 
 final kTextStyle = TextStyle(
+  fontFamily: 'Hind',
   fontSize: 20.0,
   color: Color(0xFFFFFFFF),
 );

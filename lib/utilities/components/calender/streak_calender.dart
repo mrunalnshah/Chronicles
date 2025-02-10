@@ -5,6 +5,7 @@ import 'package:path/path.dart';
 
 class StreakCalender extends StatefulWidget {
   StreakCalender({super.key});
+  late List<DateTime> _activeDates;
 
   @override
   State<StreakCalender> createState() => _StreakCalenderState();
@@ -98,7 +99,7 @@ class _StreakCalenderState extends State<StreakCalender> {
         datesDecoration: DatesDecoration(
           datesBorderRadius: 1000,
           datesBackgroundColor: Color(0xFF4EABCC), // Blue streak color
-          datesBorderColor: Color(0xFF111519),
+          datesBorderColor: Colors.transparent,
           datesTextColor: Color(0xFFFFFFFF),
         ),
       ),
@@ -108,7 +109,7 @@ class _StreakCalenderState extends State<StreakCalender> {
         datesDecoration: DatesDecoration(
           datesBorderRadius: 1000,
           datesBackgroundColor: Color(0x104EABCC),
-          datesBorderColor: Color(0x10111519),
+          datesBorderColor: Colors.transparent,
           datesTextColor: Color(0xFF1F1F1F),
         ),
       ),

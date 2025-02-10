@@ -16,10 +16,10 @@ dependencies:
   
   internet_connection_checker_plus: ^2.7.0
   streak_calendar: ^1.1.2
+  table_calendar: ^3.2.0
   rflutter_alert: ^2.0.7
   sqflite: ^2.4.1
   shared_preferences: ^2.5.1
-  table_calendar: ^3.2.0
   firebase_core: ^3.11.0
   firebase_auth: ^5.4.2
   cloud_firestore: ^5.6.3
@@ -49,3 +49,7 @@ flutter:
     - family: Roboto
       fonts:
         - asset: assets/fonts/Roboto/static/Roboto-Regular.ttf
+    - family: Klee_One
+      fonts:
+        - asset: assets\fonts\Klee_One\KleeOne-Regular.ttf
+          weight: 500
