@@ -43,8 +43,8 @@ class _ToDoTextFieldState extends State<ToDoTextField> {
       controller: _textController,
       onChanged: widget.onChanged,
       decoration: const InputDecoration(
+        border: InputBorder.none,
         hintText: 'Enter a Task',
-        border: OutlineInputBorder(),
       ),
     );
   }

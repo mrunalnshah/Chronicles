@@ -55,15 +55,19 @@ class _Top3ToDoListState extends State<Top3ToDoList> {
                     return ListTile(
                       title: Row(
                         children: [
-                          Checkbox(
-                            value: todo.status == 1,
-                            onChanged: (value) {
-                              setState(() {
-                                todo.status = value! ? 1 : 0;
-                                _updateTodoStatus(index, todo.status);
-                                _loadTodos();
-                              });
-                            },
+                          Transform.scale(
+                            scale: 1.1, // Scale factor - 1.3 for 1.3 times larger
+                            child: Checkbox(
+                              value: todo.status == 1,
+                              activeColor: const Color(0xFF4EABCC), // Added const
+                              onChanged: (value) {
+                                setState(() {
+                                  todo.status = value! ? 1 : 0;
+                                  _updateTodoStatus(index, todo.status);
+                                  _loadTodos();
+                                });
+                              },
+                            ),
                           ),
                           Expanded(
                             child: Text(todo.content),

@@ -7,7 +7,7 @@ import 'package:chronicles/utilities/components/textfields/todo_textfield.dart';
 
 final kTextStyle = TextStyle(
   fontFamily: 'Hind',
-  fontSize: 20.0,
+  fontSize: 17.0,
   color: Color(0xFFFFFFFF),
 );
 
@@ -69,7 +69,7 @@ class _ToDoListState extends State<ToDoList> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ToDo'),
+        title: const Text('To-Do'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -100,15 +100,19 @@ class _ToDoListState extends State<ToDoList> {
                                 key: ValueKey(todo.index),
                                 title: Row(
                                   children: [
-                                    Checkbox(
-                                      value: todo.status == 1,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          todo.status = value! ? 1 : 0;
-                                          _updateTodoStatus(index, todo.status);
-                                          _loadTodos();
-                                        });
-                                      },
+                                    Transform.scale(
+                                      scale: 1.1, // Scale factor - 1.3 for 1.3 times larger
+                                      child: Checkbox(
+                                        value: todo.status == 1,
+                                        activeColor: const Color(0xFF4EABCC), // Added const
+                                        onChanged: (value) {
+                                          setState(() {
+                                            todo.status = value! ? 1 : 0;
+                                            _updateTodoStatus(index, todo.status);
+                                            _loadTodos();
+                                          });
+                                        },
+                                      ),
                                     ),
                                     Expanded(
                                       child: ToDoTextField(
@@ -120,9 +124,9 @@ class _ToDoListState extends State<ToDoList> {
                                     ),
                                   ],
                                 ),
-                                leading: const Icon(Icons.drag_indicator),
+                                leading: const Icon(Icons.drag_indicator,size: 26,),
                                 trailing: IconButton(
-                                  icon: const Icon(Icons.cancel_outlined),
+                                  icon: const Icon(Icons.cancel_outlined,size: 26,),
                                   onPressed: () => _deleteTodo(index),
                                 ),
                               );
@@ -133,36 +137,6 @@ class _ToDoListState extends State<ToDoList> {
             Column(
               children: [
                 GalacticOceanButton(
-                  horizontalMargin: 70.0,
-                  onPress: () {
-                    setState(() {
-                      int millisecondsSinceEpoch =
-                          DateTime.now().millisecondsSinceEpoch;
-                      _todoDB.addToDoTask(millisecondsSinceEpoch);
-                      _loadTodos();
-                    });
-                  },
-                  buttonLabel: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add,
-                        color: Color(0xFFFFFFFF),
-                      ),
-                      SizedBox(
-                        width: 10.0,
-                      ),
-                      Text(
-                        'Add Instant ToDo',
-                        style: kTextStyle,
-                      )
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                GalacticOceanButton(
                   onPress: () {
                     Navigator.push(
                       context,
@@ -172,9 +146,73 @@ class _ToDoListState extends State<ToDoList> {
                     );
                   },
                   buttonLabel: Text(
-                    'Completed ToDo',
+                    'Completed To-Do',
                     style: kTextStyle,
                   ),
+                ),
+                SizedBox(
+                  height: 20.0,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      // Adjust the right margin as needed
+                      child: IconButton(
+                        style: IconButton.styleFrom(
+                          iconSize: 46,
+                          backgroundColor: const Color(0xFF4EABCC),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14.0),
+                          ),
+                        ),
+                        iconSize: 46, // Ensure iconSize matches styleFrom
+                        icon: const Icon(
+                          Icons.add_rounded,
+                          color: Color(0xFFFFFFFF),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            int millisecondsSinceEpoch =
+                                DateTime.now().millisecondsSinceEpoch;
+                            _todoDB.addToDoTask(millisecondsSinceEpoch);
+                            _loadTodos();
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                // GalacticOceanButton(
+                //   horizontalMargin: 70.0,
+                //   onPress: () {
+                //     setState(() {
+                //       int millisecondsSinceEpoch =
+                //           DateTime.now().millisecondsSinceEpoch;
+                //       _todoDB.addToDoTask(millisecondsSinceEpoch);
+                //       _loadTodos();
+                //     });
+                //   },
+                //   buttonLabel: Row(
+                //     mainAxisAlignment: MainAxisAlignment.center,
+                //     children: [
+                //       Icon(
+                //         Icons.add_rounded,
+                //         color: Color(0xFFFFFFFF),
+                //       ),
+                //       SizedBox(
+                //         width: 7.0,
+                //       ),
+                //       Text(
+                //         'Add Instant To-Do',
+                //         style: kTextStyle,
+                //       )
+                //     ],
+                //   ),
+                // ),
+                SizedBox(
+                  height: 20.0,
                 ),
               ],
             ),
