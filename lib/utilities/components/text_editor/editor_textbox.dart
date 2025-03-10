@@ -27,28 +27,27 @@ class EditorTextBox extends StatelessWidget {
       onTap: onToggleEdit,
       child: editMode
           ? Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    style: textEditorStyle,
-                    decoration: InputDecoration(
-                      hintText: 'Write Your Journey!',
-                    ),
-                    controller: controller,
-                    maxLines: null,
-                    onTapOutside: (_) => onToggleEdit(),
-                    onTapUpOutside: (_) => onToggleEdit(),
-                  ),
-                ),
-                IconButton(
-                  onPressed: onDelete,
-                  icon: const Icon(
-                    Icons.delete,
-                    color: Color(0xFF4EABCC),
-                  ),
-                ),
-              ],
-            )
+        children: [
+          Expanded(
+            child: TextField(
+              style: textEditorStyle,
+              decoration: InputDecoration(
+                hintText: 'Write Your Journey!',
+              ),
+              controller: controller,
+              maxLines: null,
+              onTapOutside: (_) => onToggleEdit(), // Use onTapOutside only
+            ),
+          ),
+          IconButton(
+            onPressed: onDelete,
+            icon: const Icon(
+              Icons.delete,
+              color: Color(0xFF4EABCC),
+            ),
+          ),
+        ],
+      )
           : MarkdownToHtml(markdownText: controller.text),
     );
   }
