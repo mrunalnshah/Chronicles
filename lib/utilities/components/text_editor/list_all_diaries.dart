@@ -111,28 +111,55 @@ class _ListAllDiariesState extends State<ListAllDiaries> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Personal Notes",
-            style: pageTitleStyle,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(30.0, 0.0, 0.0, 7.0),
+            child: Text(
+              "Personal Notes",
+              style: pageTitleStyle,
+            ),
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Container(
-                padding: EdgeInsets.all(10.0),
-                decoration: BoxDecoration(
-                  border: Border.all(width: 2.0),
-                  color: Color(0x00000080),
-                ),
-                child: Text("Productive"),
+              SizedBox(
+                width: 30,
               ),
               Container(
-                padding: EdgeInsets.all(10.0),
+                padding: EdgeInsets.fromLTRB(10.0,6.0,10.0,6.0),
                 decoration: BoxDecoration(
-                  border: Border.all(width: 2.0),
+                  border: Border.all(width: 1.0, color: Color(0x80000000)),
+                  borderRadius: BorderRadius.circular(3.0),
                   color: Color(0x00000080),
                 ),
-                child: Text("Weekday"),
+                child: Text(
+                  "Productive",
+                  style: TextStyle(
+                    fontFamily: 'Hind',
+                    fontWeight: FontWeight.w400,
+                    fontSize: 16.0,
+                    color: Color(0xFF1F1F1F),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 25,
+              ),
+              Container(
+                padding: EdgeInsets.fromLTRB(10.0,6.0,10.0,6.0),
+                decoration: BoxDecoration(
+                  border: Border.all(width: 1.0, color: Color(0x80000000)),
+                  borderRadius: BorderRadius.circular(3.0),
+                  color: Color(0x00000080),
+                ),
+                child: Text(
+                  "Weekday",
+                  style: TextStyle(
+                    fontFamily: 'Hind',
+                    fontWeight: FontWeight.w400,
+                    fontSize: 16.0,
+                    color: Color(0xFF1F1F1F),
+                  ),
+                ),
               ),
             ],
           ),
@@ -142,7 +169,7 @@ class _ListAllDiariesState extends State<ListAllDiaries> {
           Divider(
             color: Color(0xFFC1CCD6),
             height: 20.0,
-            thickness: 4.0,
+            thickness: 2.0,
           ),
           Expanded(
             child: ListView.builder(
@@ -159,7 +186,12 @@ class _ListAllDiariesState extends State<ListAllDiaries> {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           monthYear,
-                          style: monthYearStyling,
+                          style: TextStyle(
+                            fontFamily: 'Hind',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 24.0,
+                            color: Color(0xFF1F1F1F),
+                          ),
                         ),
                       ),
                       SizedBox(
@@ -196,16 +228,35 @@ class _ListAllDiariesState extends State<ListAllDiaries> {
                                         );
                                       },
                                       child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          Text(diary.title,
-                                              style: diaryTitleStyle),
+                                          Text(
+                                            diary.title,
+                                            style: TextStyle(
+                                              fontFamily: 'Hind',
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 18.0,
+                                              color: Color(0xFF1F1F1F),
+                                            ),
+                                          ),
                                           Text(
                                             diary.content,
-                                            style: diaryContentStyle,
+                                            style: TextStyle(
+                                              fontFamily: 'Hind',
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 16.0,
+                                              color: Color(0xFF1F1F1F),
+                                            ),
                                           ),
                                           Text(
                                             diary.modifiedAt,
-                                            style: diaryModifiedAtStyle,
+                                            style: TextStyle(
+                                              fontFamily: 'Hind',
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 16.0,
+                                              color: Color(0x991F1F1F),
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -219,7 +270,7 @@ class _ListAllDiariesState extends State<ListAllDiaries> {
                                           width: MediaQuery.of(context)
                                                   .size
                                                   .width -
-                                              200,
+                                              150,
                                         ),
                                       ),
                                   ],
@@ -241,11 +292,21 @@ class _ListAllDiariesState extends State<ListAllDiaries> {
                                       children: [
                                         Text(
                                           weekday,
-                                          style: weekdayStyle,
+                                          style: TextStyle(
+                                            fontFamily: 'Hind',
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 24.0,
+                                            color: Color(0xFF1F1F1F),
+                                          ),
                                         ),
                                         Text(
                                           intday,
-                                          style: intDayStyle,
+                                          style: TextStyle(
+                                            fontFamily: 'Hind',
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 34.0,
+                                            color: Color(0xFF1F1F1F),
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -267,8 +328,8 @@ class _ListAllDiariesState extends State<ListAllDiaries> {
                                 ),
                                 child: Divider(
                                   color: Color(0xFFC1CCD6),
-                                  thickness: 3.0,
-                                  height: 5.0,
+                                  height: 50.0,
+                                  thickness: 2.0,
                                 ),
                               ),
                             ],

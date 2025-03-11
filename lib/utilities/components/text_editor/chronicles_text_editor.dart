@@ -8,7 +8,7 @@ import 'package:chronicles/services/file_manager.dart';
 final titleTextStyle = TextStyle(
   color: Color(0xFF1F1F1F),
   fontFamily: 'Hind',
-  fontWeight: FontWeight.w600,
+  fontWeight: FontWeight.w500,
   fontSize: 22.0,
 );
 
@@ -16,6 +16,7 @@ class TextEditor extends StatefulWidget {
   String? fileName;
   int? milliSinceEpoch;
   bool? isModify;
+
   TextEditor({super.key, this.fileName, this.isModify});
 
   @override
@@ -32,6 +33,7 @@ class _TextEditorState extends State<TextEditor> {
   String createdAt = '';
   String modifiedAt = '';
   late CurrentDateTime nowTime;
+
   @override
   void initState() {
     nowTime = CurrentDateTime();
@@ -236,7 +238,7 @@ class _TextEditorState extends State<TextEditor> {
           children: [
             Text(createdAt),
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 IconButton(
                   onPressed: () {
@@ -264,12 +266,12 @@ class _TextEditorState extends State<TextEditor> {
                   },
                   icon: Icon(Icons.delete_outline_sharp),
                 ),
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.upload, color: Colors.white),
-                  style:
-                      IconButton.styleFrom(backgroundColor: Color(0xFF4EABCC)),
-                ),
+                // IconButton(
+                //   onPressed: () {},
+                //   icon: Icon(Icons.upload, color: Colors.white, size: 2.0,),
+                //   style:
+                //       IconButton.styleFrom(backgroundColor: Color(0xFF4EABCC)),
+                // ),
               ],
             ),
           ],
@@ -292,9 +294,17 @@ class _TextEditorState extends State<TextEditor> {
             Padding(
               padding: const EdgeInsets.only(left: 20.0, top: 20.0),
               child: TextField(
-                style: titleTextStyle,
+                style: TextStyle(
+                  color: Color(0xFF1F1F1F),
+                  fontFamily: 'Hind',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 22.0,
+                ),
                 controller: titleController,
-                decoration: InputDecoration(hintText: 'Title'),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Title',
+                ),
               ),
             ),
             const SizedBox(height: 30.0),
@@ -324,10 +334,10 @@ class _TextEditorState extends State<TextEditor> {
               height: 20.0,
             ),
             Container(
-              padding: EdgeInsets.only(right: 18.0),
-              margin: EdgeInsets.only(bottom: 20.0),
+              padding: EdgeInsets.only(left: 20, right: 18.0),
+              margin: EdgeInsets.only(bottom: 18.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
                     color: Color(0x104EABCC),

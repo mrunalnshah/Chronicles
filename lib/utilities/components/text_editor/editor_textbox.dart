@@ -33,6 +33,7 @@ class EditorTextBox extends StatelessWidget {
                     style: textEditorStyle,
 
                     decoration: InputDecoration(
+                      border: InputBorder.none,
                       hintText: 'Write Your Journey!',
                     ),
 
