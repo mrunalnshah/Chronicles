@@ -45,11 +45,11 @@ final double endContainerBorderWidth = 1.0;
 final Color buttonTextColor = Color(0xFFFFFFFF);
 final Color buttonHighlightColor = Color(0xFF35879F);
 final Color buttonSplashColor = Color(0xFF6BC9E2);
-final Color appBarBGColor = Color(0xFFFFFFFF);
+final Color appBarBGColor = Color(0xFFB8DDEA);
 final Color profileBGColor = Color(0x4D4EABCC);
 final Color profileBorderColor = Color(0xFF4EABCC);
 final Color optionBGColor = Color(0xFFF4F4F4);
-final Color endContainerBGColor = Color(0x4D4EABCC);
+final Color endContainerBGColor = Color(0xFFFFFFFF);
 final Color endContainerBorderColor = Color(0xFF4EABCC);
 
 final String friendsButtonLabel = "+ Friends";
@@ -77,14 +77,14 @@ final firstNameLastNameStyle = TextStyle(
   fontSize: 20.0,
   fontFamily: 'Hind',
   fontWeight: FontWeight.w500,
-  color: Color(0xFF1F1F1F),
+  color: Color(0xFFFFFFFF),
 );
 
 final usernameStyle = TextStyle(
   fontSize: 18.0,
   fontFamily: 'Hind',
   fontWeight: FontWeight.w300,
-  color: Color(0x901F1F1F),
+  color: Color(0xFFEDFAFF),
 );
 
 class ProfileScreen extends StatefulWidget {
@@ -126,6 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: appBarBGColor,
       appBar: AppBar(
         backgroundColor: appBarBGColor,
         scrolledUnderElevation: scrolledUnderElevationValue,
@@ -189,7 +190,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 width: 355,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: Color(0xFFF4F4F4),
+                  color: Color(0xFF5EBAD8),
                 ),
               ),
               Positioned(
@@ -201,9 +202,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   width: 180,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Color(0xFFF4F4F4),
+                      color: Color(0xFF5EBAD8),
                       border: Border.all(
-                        color: Color(0xFFF4F4F4),
+                        color: Color(0xFF5EBAD8),
                       )),
                   child: Center(
                     child: CircleAvatar(
@@ -225,11 +226,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Column(children: [
                   Text(
                     "$firstName $lastName",
-                    style: firstNameLastNameStyle,
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      fontFamily: 'Hind',
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFFFFFFFF),
+                    ),
                   ),
                   Text(
                     "@${username.toLowerCase()}",
-                    style: usernameStyle,
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontFamily: 'Hind',
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFFEDFAFF),
+                    ),
                   ),
                 ]),
               ),
@@ -242,9 +253,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(borderRadiusInfiniteButton),
-                color: profileBGColor,
+                color: Color(0xFFFFFFFF),
                 border: Border.all(
-                  color: profileBorderColor,
+                  color: Color(0xFFFFFFFF),
                   width: profileBorderWidth,
                 ),
               ),
@@ -272,7 +283,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: Container(
                 decoration: BoxDecoration(
-                  color: optionBGColor,
+                  color: Color(0xFFFFFFFF),
                   borderRadius: BorderRadius.circular(optionBorderRadius),
                 ),
                 child: Column(
@@ -283,7 +294,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: CustomTextButton(
                         text: optionSettingText,
                         icon: Icons.settings,
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            '/SettingsScreen',
+                            (Route<dynamic> route) => false,
+                          );
+                        },
                       ),
                     ),
                     Padding(
@@ -317,18 +334,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(endContainerBorderRadius),
-                color: endContainerBGColor,
-                border: Border.all(
-                  color: endContainerBorderColor,
-                  width: endContainerBorderWidth,
-                ),
+                color: Color(0xFFFFFFFF),
               ),
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: padding15),
                 child: CustomTextButton(
                   text: optionLogoutText,
                   icon: Icons.logout_outlined,
-                  containerColor: Color(0x804EABCC),
+                  containerColor: Color(0xFFFFFFFF),
                   onPressed: () async {
                     Navigator.pushNamedAndRemoveUntil(
                       context,

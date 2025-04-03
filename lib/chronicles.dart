@@ -29,6 +29,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:chronicles/screens/settings/settings_default_view.dart';
+import 'package:chronicles/screens/profile/edit_profile.dart';
 
 // Main Function
 void main() async {
@@ -90,6 +92,7 @@ class Chronicles extends StatelessWidget {
             '/ProfileScreen': (context) => ProfileScreen(),
             '/DiaryArchive': (context) => DiaryArchive(),
             '/UsernameScreen': (context) => UsernameScreen(),
+            '/SettingsScreen': (context) => SettingsScreen(),
           },
           home: homeScreen,
         );
