@@ -17,6 +17,8 @@ Future<bool> isPinRequired() async {
       return false;
     }
   }
-  loginAuth.writeSecureData('isPinRequired', 'false');
+  if (value == 'null') {
+    loginAuth.writeSecureData('isPinRequired', 'false');
+  }
   return false;
 }

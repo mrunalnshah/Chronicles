@@ -7,6 +7,10 @@
 // Importing Packages
 
 import 'dart:io';
+import 'package:chronicles/screens/profile/friends/friend_lists_mainscreen.dart';
+import 'package:chronicles/screens/profile/settings/settings_screen.dart';
+import 'package:chronicles/services/internet_connectivity.dart';
+import 'package:chronicles/utilities/components/alerts/no_internet_alert.dart';
 import 'package:chronicles/utilities/components/buttons/infinite_width_button.dart';
 import 'package:chronicles/utilities/data/app_policy/terms_and_conditions.dart';
 import 'package:flutter/material.dart';
@@ -249,7 +253,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               child: InfiniteRoundWidthButton(
-                onPress: () {},
+                onPress: () async {
+                  bool internetStatus = await getInternetStatus();
+                  if (internetStatus) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FriendListScreen(),
+                      ),
+                    );
+                  } else {
+                    noInternetAlert(context);
+                  }
+                },
                 buttonLabel: Text(
                   friendsButtonLabel,
                   style: buttonLabelTextStyle(
@@ -283,7 +299,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: CustomTextButton(
                         text: optionSettingText,
                         icon: Icons.settings,
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SettingsPage(),
+                            ),
+                          );
+                        },
                       ),
                     ),
                     Padding(

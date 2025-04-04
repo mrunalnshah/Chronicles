@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:chronicles/utilities/components/buttons/infinite_width_button.dart';
 import 'package:chronicles/utilities/components/textfields/gray_textfield.dart';
 
+import '../../services/change_password_services.dart';
+
 // Variable Values & TextStyles
 final double leftRightOverallPadding = 25.0;
 final double topOverallPadding = 60.0;
@@ -83,6 +85,7 @@ class ChangePasswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ChangePasswordService _passwordService = ChangePasswordService();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -160,7 +163,46 @@ class ChangePasswordScreen extends StatelessWidget {
                     isPassword: isPasswordVisible,
                   ),
                   InfiniteRoundWidthButton(
-                    onPress: () {
+                    onPress: () async {
+                      String newPass = newPassword.text.trim();
+                      String confirmPass = confirmNewPassword.text.trim();
+
+                      if (newPass.isEmpty || confirmPass.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text("Please fill in both fields.")),
+                        );
+                        return;
+                      }
+                      if (newPass.length < 8) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(
+                                  "Password must be at least 8 characters long.")),
+                        );
+                        return;
+                      }
+                      if (newPass != confirmPass) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Passwords do not match.")),
+                        );
+                        return;
+                      }
+
+                      String? error =
+                          await _passwordService.changePassword(newPass);
+                      if (error == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text("Password updated successfully")),
+                        );
+                        clearTextFields();
+                        Navigator.pop(context);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(error)),
+                        );
+                      }
                       clearTextFields();
                       Navigator.pop(context);
                     },

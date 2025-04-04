@@ -9,6 +9,7 @@ import '../../services/internet_connectivity.dart';
 import '../../services/pfp_services.dart';
 import '../../services/user_service.dart';
 import '../../utilities/components/alerts/no_internet_alert.dart';
+import '../../utilities/data/user_auth_data.dart';
 
 // Variable Values & TextStyle
 final double appBarRightPadding = 10.0;
@@ -92,7 +93,11 @@ class _UsernameScreenState extends State<UsernameScreen> {
   }
 
   Future<void> saveProfileImageOnline() async {
-    await uploadProfileImageToSupabase(imageFile);
+    if (_selectedImage != null) {
+      await uploadProfileImageToSupabase(imageFile);
+    } else {
+      print("No image selected, skipping upload.");
+    }
   }
 
   @override
@@ -194,10 +199,13 @@ class _UsernameScreenState extends State<UsernameScreen> {
                       if (!hasInternet) {
                         noInternetAlert(context);
                       }
-                      bool isImageUploaded = _selectedImage != null;
-                      if (isImageUploaded) {
+                      if (_selectedImage != null) {
                         await saveProfileImage();
                         await saveProfileImageOnline();
+                      } else {
+                        String defaultUrl = await fetchDefaultProfileUrl();
+                        String userId = await UserDataFetcher().fetchUID();
+                        await updateUrlInFirebase(userId, defaultUrl);
                       }
 
                       var checkUsername =

@@ -66,6 +66,7 @@ Future<bool> isGoogleAuthenticationDone(BuildContext context) async {
         'gender': 3,
         'dob': '',
         'pfp_url': '',
+        'friends_uid': [],
         'join_date': nowTime.millisecondsSinceEpoch,
       }, SetOptions(merge: true));
     }

@@ -45,6 +45,7 @@ Future<String> registerAuthentication(BuildContext context, String firstName,
         'gender': 3,
         'dob': '',
         'pfp_url': '',
+        'friends_uid': [],
         'join_date': nowTime.millisecondsSinceEpoch,
       });
     } catch (e) {

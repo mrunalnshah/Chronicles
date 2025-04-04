@@ -38,10 +38,16 @@
 
          In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
     <queries>
+        <!-- Query for TTS (Text-to-Speech) service -->
         <intent>
-            <action android:name="android.intent.action.TTS_SERVICE" />
+            <action android:name="android.intent.action.TTS_SERVICE"/>
+        </intent>
+
+        <!-- Query for text processing -->
+        <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
     </queries>
+
 </manifest>

@@ -49,6 +49,7 @@ flutter:
     - assets/images/logo/
     - assets/images/icons/
     - assets/lottie/
+    - assets/images/icons/new_profile_icon.png
 
   fonts:
     - family: Abyssinica_SIL

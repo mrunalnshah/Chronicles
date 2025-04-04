@@ -8,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 String? savedImagePath;
 final supabase = Supabase.instance.client;
+const String defaultAssetImage = "assets/images/default_profile.jpg";
 
 Future<File?> pickImage() async {
   File? selectedImage;
@@ -19,6 +20,20 @@ Future<File?> pickImage() async {
     return selectedImage;
   }
   return null;
+}
+
+Future<String> fetchDefaultProfileUrl() async {
+  try {
+    const String defaultImagePath =
+        'profile-images/default Image/new_profile_icon.png';
+
+    final String defaultUrl =
+        supabase.storage.from('profile-images').getPublicUrl(defaultImagePath);
+
+    return defaultUrl;
+  } catch (e) {
+    return '';
+  }
 }
 
 Future<String?> saveImage(File? selectedImage) async {
@@ -153,6 +168,23 @@ Future<String?> getSavedImagePath() async {
     }
   } catch (e) {
     //print('Error retrieving profile image path: $e');
+  }
+  return null;
+}
+
+Future<String?> fetchUserPfpUrl(String userId) async {
+  try {
+    DocumentSnapshot<Map<String, dynamic>> userDoc = await FirebaseFirestore
+        .instance
+        .collection('user_account')
+        .doc(userId)
+        .get();
+
+    if (userDoc.exists) {
+      return userDoc.data()?['pfp_url'];
+    }
+  } catch (e) {
+    print('Error fetching profile image URL: $e');
   }
   return null;
 }
