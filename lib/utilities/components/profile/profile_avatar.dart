@@ -1,75 +1,48 @@
 import 'dart:io';
 import 'package:chronicles/services/pfp_services.dart';
-import 'package:chronicles/utilities/data/user_auth_data.dart';
 import 'package:flutter/material.dart';
-import 'package:chronicles/services/streak_services.dart';
-import 'package:lottie/lottie.dart';
-
-final double circleAvatarRadius = 25.0;
-final double circlePositionTop = 0.0;
-final double circlePositionRight = 0.0;
-final double circleIconSize = 20.0;
-final double streakPositionTop = 3.0;
-final double streakPositionRight = 7.0;
-final double streakNumberSize = 10.0;
 
 class ProfileAvatar extends StatefulWidget {
-  const ProfileAvatar({super.key});
+  final double circleAvatarRadius;
+
+  const ProfileAvatar({
+    Key? key,
+    required this.circleAvatarRadius,
+  }) : super(key: key);
 
   @override
   State<ProfileAvatar> createState() => _ProfileAvatarState();
 }
 
 class _ProfileAvatarState extends State<ProfileAvatar> {
-  int currentStreak = 0;
-  int maxStreak = 0;
   File? profileImage;
 
   @override
   void initState() {
-    fetchStreak();
-    pfpDisplay();
     super.initState();
+    pfpDisplay();
   }
 
   Future<void> pfpDisplay() async {
     String? imagePath = await getSavedImagePath();
-    setState(() {
-      if (imagePath != null) {
-        profileImage = File(imagePath);
-      }
-    });
-  }
-
-  Future<void> fetchStreak() async {
-    int streakValueFromUserData = await UserDataFetcher().fetchStreak();
-    int maxStreakValueFromUserData = await UserDataFetcher().fetchMaxStreak();
-
-    int calculatedMaxStreak =
-        await StreakDatabaseService.instance.calculateMaxStreak();
-    int calculatedCurrentStreak =
-        await StreakDatabaseService.instance.calculateCurrentStreak();
-
-    setState(() {
-      currentStreak = calculatedCurrentStreak > streakValueFromUserData
-          ? calculatedCurrentStreak
-          : streakValueFromUserData;
-
-      maxStreak = calculatedMaxStreak > maxStreakValueFromUserData
-          ? calculatedMaxStreak
-          : maxStreakValueFromUserData;
-    });
+    if (mounted) {
+      setState(() {
+        if (imagePath != null) {
+          profileImage = File(imagePath);
+        }
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return CircleAvatar(
-      radius: circleAvatarRadius,
+      radius: widget.circleAvatarRadius,
       backgroundColor: Colors.transparent,
       backgroundImage: profileImage != null
-          ? FileImage(profileImage!)
-          : AssetImage('assets/images/icons/new_profile_icon.png')
-              as ImageProvider,
+          ? FileImage(profileImage!,
+              scale: DateTime.now().millisecondsSinceEpoch.toDouble())
+          : const AssetImage('assets/images/icons/new_profile_icon.png'),
     );
   }
 }

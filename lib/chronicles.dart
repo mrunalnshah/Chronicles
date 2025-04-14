@@ -101,9 +101,15 @@ class Chronicles extends StatelessWidget {
 // _getHomeScreen function returns Screen based on Auth Values.
 Future<Widget> _getHomeScreen(BuildContext context) async {
   final bool isUserLoginActive = await isLoginDone();
-  final bool isPinLoginRequired = await isPinRequired();
 
   if (isUserLoginActive) {
+    final bool isUserDetailRequired = await isUserDetailDone();
+    final bool isPinLoginRequired = await isPinRequired();
+
+    if (!isUserDetailRequired) {
+      return UsernameScreen();
+    }
+
     return isPinLoginRequired ? PinLoginScreen() : Dashboard();
   } else {
     return WelcomeScreen();

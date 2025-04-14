@@ -2,6 +2,34 @@ import 'package:flutter/material.dart';
 import '../../../services/friends_services.dart';
 import '../../../utilities/components/List_Tile/friends_list_tile.dart';
 
+final String pandaImagePath = 'assets/images/logo/panda_image.jpg';
+final String receivedRequestText = 'Pending Friend Requests (Received)';
+final String sentRequestText = 'Sent Friend Requests';
+final String emptyFriendListText = 'No friends found';
+
+final double overAllPadding = 8.0;
+final double overAllTopPadding = 4.0;
+final double spaceBetweenExpandableList = 10.0;
+final double padding_5 = 5.0;
+final double upDownIconSize = 24.0;
+final double emptyListOverAllPadding = 12.0;
+final double pandaIconHeight = 150.0;
+final double height_10 = 10.0;
+
+final friendListTextStyle = TextStyle(
+  fontSize: 16.0,
+  fontFamily: 'Hind',
+  fontWeight: FontWeight.w600,
+  color: Color(0xFF1F1F1F),
+);
+
+final emptyFriendListTextStyle = TextStyle(
+  fontSize: 16.0,
+  fontFamily: 'Hind',
+  fontWeight: FontWeight.w500,
+  color: Color(0xFF1F1F1F),
+);
+
 class PendingRequestsPage extends StatefulWidget {
   const PendingRequestsPage({super.key});
 
@@ -10,24 +38,24 @@ class PendingRequestsPage extends StatefulWidget {
 }
 
 class _PendingRequestsPageState extends State<PendingRequestsPage> {
-  final FriendServices _friendsService = FriendServices();
+  final FriendServices friendService = FriendServices();
   List<Map<String, String>> receivedRequests = [];
   List<Map<String, String>> sentRequests = [];
 
-  bool _showReceived = false; // Toggle for received requests
-  bool _showSent = false; // Toggle for sent requests
+  bool showReceivedRequest = false;
+  bool showSendRequest = false;
 
   @override
   void initState() {
     super.initState();
-    _fetchPendingRequests();
+    pendingRequest();
   }
 
-  Future<void> _fetchPendingRequests() async {
+  Future<void> pendingRequest() async {
     List<Map<String, String>> receivedList =
-        await _friendsService.fetchPendingRequests(true);
+        await friendService.fetchPendingRequests(true);
     List<Map<String, String>> sentList =
-        await _friendsService.fetchPendingRequests(false);
+        await friendService.fetchPendingRequests(false);
 
     setState(() {
       receivedRequests = receivedList;
@@ -35,38 +63,42 @@ class _PendingRequestsPageState extends State<PendingRequestsPage> {
     });
   }
 
-  Future<void> _acceptRequest(String requestId, String senderId) async {
-    await _friendsService.acceptRequest(requestId, senderId);
-    _fetchPendingRequests();
+  Future<void> acceptRequest(String requestId, String senderId) async {
+    await friendService.acceptRequest(requestId, senderId);
+    pendingRequest();
   }
 
-  Future<void> _deleteRequest(String requestId, bool isReceived) async {
-    await _friendsService.deleteRequest(requestId);
-    _fetchPendingRequests();
+  Future<void> cancelRequest(String requestId, bool isReceived) async {
+    await friendService.deleteRequest(requestId);
+    pendingRequest();
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:
-          const EdgeInsets.only(top: 4.0, bottom: 8.0, right: 8.0, left: 8.0),
+      padding: EdgeInsets.fromLTRB(
+          overAllPadding, overAllTopPadding, overAllPadding, overAllPadding),
       child: Column(
         children: [
-          _buildExpandableSection(
-              "Pending Friend Requests (Received)",
+          requestExpandableSection(
+              receivedRequestText,
               receivedRequests,
-              _showReceived,
-              (value) => setState(() => _showReceived = value),
+              showReceivedRequest,
+              (value) => setState(() => showReceivedRequest = value),
               true),
-          const SizedBox(height: 10),
-          _buildExpandableSection("Sent Friend Requests", sentRequests,
-              _showSent, (value) => setState(() => _showSent = value), false),
+          SizedBox(height: spaceBetweenExpandableList),
+          requestExpandableSection(
+              sentRequestText,
+              sentRequests,
+              showSendRequest,
+              (value) => setState(() => showSendRequest = value),
+              false),
         ],
       ),
     );
   }
 
-  Widget _buildExpandableSection(
+  Widget requestExpandableSection(
       String title,
       List<Map<String, String>> requests,
       bool isExpanded,
@@ -77,20 +109,20 @@ class _PendingRequestsPageState extends State<PendingRequestsPage> {
         InkWell(
           onTap: () => toggleExpand(!isExpanded),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+            padding: EdgeInsets.symmetric(
+                vertical: padding_5, horizontal: padding_5),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
+                  style: friendListTextStyle,
                 ),
                 Icon(
                   isExpanded
                       ? Icons.keyboard_arrow_up
                       : Icons.keyboard_arrow_down,
-                  size: 24,
+                  size: upDownIconSize,
                 ),
               ],
             ),
@@ -98,9 +130,12 @@ class _PendingRequestsPageState extends State<PendingRequestsPage> {
         ),
         if (isExpanded)
           Padding(
-            padding: EdgeInsets.only(top: 4.0, right: 8.0, left: 8.0),
+            padding: EdgeInsets.only(
+                top: overAllTopPadding,
+                right: overAllPadding,
+                left: overAllPadding),
             child: requests.isEmpty
-                ? _emptyState("No requests available.")
+                ? emptyFriendList(emptyFriendListText)
                 : Column(
                     children: requests.map((request) {
                       final String userId = request["userId"] ?? "";
@@ -119,8 +154,8 @@ class _PendingRequestsPageState extends State<PendingRequestsPage> {
                         fullName: fullName,
                         requestId: requestId,
                         isReceived: isReceived,
-                        onAccept: isReceived ? _acceptRequest : null,
-                        onDelete: _deleteRequest,
+                        onAccept: isReceived ? acceptRequest : null,
+                        onDelete: cancelRequest,
                       );
                     }).toList(),
                   ),
@@ -129,20 +164,20 @@ class _PendingRequestsPageState extends State<PendingRequestsPage> {
     );
   }
 
-  Widget _emptyState(String message) {
+  Widget emptyFriendList(String message) {
     return Padding(
-      padding: const EdgeInsets.all(12.0),
+      padding: EdgeInsets.all(emptyListOverAllPadding),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Image.asset(
-            'assets/images/logo/panda_image.jpg',
-            height: 100,
+            pandaImagePath,
+            height: pandaIconHeight,
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: height_10),
           Text(
             message,
-            style: const TextStyle(fontSize: 14, color: Colors.black54),
+            style: emptyFriendListTextStyle,
           ),
         ],
       ),

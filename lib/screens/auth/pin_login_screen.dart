@@ -9,16 +9,19 @@ import 'package:chronicles/utilities/components/keyboard/blue_numeric_keyboard.d
 import 'package:chronicles/utilities/components/textfields/otp_display_textfield.dart';
 
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../services/secure_storage.dart';
 
 final String passwordResetText = 'Pin Login';
 
 final String normalMessageTitleText = 'Enter your 4-digit Pin';
+final String normalMessageText = "Can’t remember PIN? ";
+final String loginButtonText = "Login again";
 
 final double bodyLeftRightPadding = 25.0;
 
-final double bodyTopPadding = 180.0;
+final double bodyTopPadding = 160.0;
 
 final double iconContainerSize = 90.0;
 
@@ -30,11 +33,7 @@ final double titleTopPadding = 20.0;
 
 final double textFieldTopPadding = 30.0;
 
-final double textFieldBottomPadding = 30.0;
-
-final double resendTextTopPadding = 5.0;
-
-final double resendTextBottomPadding = 15.0;
+final double textFieldBottomPadding = 15.0;
 
 final Color borderColor = Color(0xFFDDDFE5);
 
@@ -60,7 +59,14 @@ final normalMessageStyle = TextStyle(
   color: Color(0xFF1F1F1F),
 );
 
-final resentOtpButtonStyle = TextStyle(
+final accountExistStyle = TextStyle(
+  fontSize: 16.0,
+  fontFamily: "Hind",
+  fontWeight: FontWeight.w600,
+  color: Color(0xFF1F1F1F),
+);
+
+final loginButtonStyle = TextStyle(
   fontSize: 16.0,
   fontFamily: "Hind",
   fontWeight: FontWeight.w600,
@@ -152,6 +158,33 @@ class _PinLoginScreen extends State<PinLoginScreen> {
                   padding: EdgeInsets.only(
                       top: textFieldTopPadding, bottom: textFieldBottomPadding),
                   child: OtpDisplayTextfield(inputText: inputText),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      normalMessageText,
+                      style: accountExistStyle,
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        SecureStorage storage = SecureStorage();
+                        GoogleSignIn googleSignIn = GoogleSignIn();
+
+                        await googleSignIn.signOut();
+
+                        storage.updateSecureData('isLoginDone', 'false');
+                        storage.updateSecureData('isPinRequired', 'false');
+                        storage.updateSecureData('isUserDetailDone', 'true');
+
+                        Navigator.popAndPushNamed(context, '/WelcomeScreen');
+                      },
+                      child: Text(
+                        loginButtonText,
+                        style: loginButtonStyle,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

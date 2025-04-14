@@ -7,7 +7,9 @@
 // Importing Packages
 
 import 'dart:io';
+import 'package:chronicles/utilities/components/alerts/two_buttons_auth_alert.dart';
 import 'package:chronicles/utilities/components/buttons/infinite_width_button.dart';
+import 'package:chronicles/utilities/components/profile/profile_avatar.dart';
 import 'package:chronicles/utilities/data/app_policy/terms_and_conditions.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -17,11 +19,8 @@ import 'package:chronicles/utilities/data/app_policy/help.dart';
 import 'package:chronicles/utilities/data/app_policy/privacy_policy.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:chronicles/utilities/data/user_auth_data.dart';
-import 'package:chronicles/services/pfp_services.dart';
 import 'package:chronicles/screens/profile/friends/friend_lists_mainscreen.dart';
 import 'package:chronicles/screens/profile/settings/settings_screen.dart';
-import 'package:chronicles/services/internet_connectivity.dart';
-import 'package:chronicles/utilities/components/alerts/no_internet_alert.dart';
 
 // Variable Values & TextStyles
 final double buttonHeight = 50.0;
@@ -33,11 +32,10 @@ final double bodyHorizontalPadding = 20.0;
 final double height20 = 20.0;
 final double height25 = 25.0;
 final double sizedBoxBetweenProfilePicAndSetting = 13.0;
-final double profileIconWidth = 150.0;
-final double profileIconHeight = 150.0;
+final double circleAvatarRadius = 80.0;
 final double height60 = 60.0;
 final double borderRadiusInfiniteButton = 30.0;
-final double profileBorderWidth = 1.0;
+final double friendBorderWidth = 1.0;
 final double infiniteButtonVerticalMargin = 5.0;
 final double optionBottomPadding = 40.0;
 final double optionBorderRadius = 30.0;
@@ -50,8 +48,8 @@ final Color buttonTextColor = Color(0xFFFFFFFF);
 final Color buttonHighlightColor = Color(0xFF35879F);
 final Color buttonSplashColor = Color(0xFF6BC9E2);
 final Color appBarBGColor = Color(0xFFFFFFFF);
-final Color profileBGColor = Color(0x4D4EABCC);
-final Color profileBorderColor = Color(0xFF4EABCC);
+final Color friendBGColor = Color(0x4D4EABCC);
+final Color friendBorderColor = Color(0xFF4EABCC);
 final Color optionBGColor = Color(0xFFF4F4F4);
 final Color endContainerBGColor = Color(0x4D4EABCC);
 final Color endContainerBorderColor = Color(0xFF4EABCC);
@@ -104,17 +102,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     fetchUserData();
-    pfpDisplay();
     super.initState();
-  }
-
-  Future<void> pfpDisplay() async {
-    String? imagePath = await getSavedImagePath();
-    setState(() {
-      if (imagePath != null) {
-        profileImage = File(imagePath);
-      }
-    });
   }
 
   void fetchUserData() async {
@@ -210,20 +198,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: Color(0xFFF4F4F4),
                       )),
                   child: Center(
-                    child: CircleAvatar(
-                      radius: 80,
-                      backgroundColor: Colors.transparent,
-                      backgroundImage: profileImage != null
-                          ? FileImage(profileImage!)
-                          : AssetImage(
-                                  'assets/images/icons/new_profile_icon.png')
-                              as ImageProvider,
-                    ),
-                  ),
+                      child: ProfileAvatar(
+                          circleAvatarRadius: circleAvatarRadius)),
                 ),
               ),
               Positioned(
-                bottom: 20.0,
+                bottom: 15.0,
                 left: 0,
                 right: 0,
                 child: Column(children: [
@@ -246,26 +226,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(borderRadiusInfiniteButton),
-                color: profileBGColor,
+                color: friendBGColor,
                 border: Border.all(
-                  color: profileBorderColor,
-                  width: profileBorderWidth,
+                  color: friendBorderColor,
+                  width: friendBorderWidth,
                 ),
               ),
               child: InfiniteRoundWidthButton(
                 onPress: () async {
-                  bool internetStatus = await getInternetStatus();
-
-                  if (internetStatus) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => FriendListScreen(),
-                      ),
-                    );
-                  } else {
-                    noInternetAlert(context);
-                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FriendListScreen(),
+                    ),
+                  );
                 },
                 buttonLabel: Text(
                   friendsButtonLabel,
@@ -354,18 +328,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   icon: Icons.logout_outlined,
                   containerColor: Color(0x804EABCC),
                   onPressed: () async {
-                    Navigator.pushNamedAndRemoveUntil(
+                    twoButtonsAuthAlert(
                       context,
-                      '/WelcomeScreen',
-                      (Route<dynamic> route) => false,
+                      message: "Are you sure you want to logout?",
+                      cancelButtonText: "Cancel",
+                      proceedButtonText: "Logout",
+                      onCancel: () {
+                        Navigator.pop(context);
+                      },
+                      onProceed: () async {
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          '/WelcomeScreen',
+                          (Route<dynamic> route) => false,
+                        );
+                        SecureStorage storage = SecureStorage();
+                        GoogleSignIn googleSignIn = GoogleSignIn();
+
+                        await googleSignIn.signOut();
+
+                        storage.updateSecureData('isLoginDone', 'false');
+                        storage.updateSecureData('isPinRequired', 'false');
+                        storage.updateSecureData('isUserDetailDone', 'true');
+                      },
+                      icon: Icons.logout,
+                      iconColor: Color(0xFF1F1F1F),
                     );
-                    SecureStorage storage = SecureStorage();
-                    GoogleSignIn googleSignIn = GoogleSignIn();
-
-                    await googleSignIn.signOut();
-
-                    storage.updateSecureData('isLoginDone', 'false');
-                    storage.updateSecureData('isPinRequired', 'false');
                   },
                 ),
               ),

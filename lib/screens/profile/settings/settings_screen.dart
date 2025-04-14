@@ -2,9 +2,54 @@ import 'dart:io';
 import 'package:chronicles/screens/profile/settings/general_setting_screen.dart';
 import 'package:chronicles/screens/profile/settings/personal_info_screen.dart';
 import 'package:chronicles/screens/profile/settings/security_screen.dart';
+import 'package:chronicles/utilities/components/profile/profile_avatar.dart';
 import 'package:flutter/material.dart';
 import '../../../services/pfp_services.dart';
 import '../../../utilities/data/user_auth_data.dart';
+
+final String titleMessage = "Account Settings";
+final String generalTabButton = "General";
+final String personalInfoTabButton = "Personal Info";
+final String securityTabButton = "Security";
+final String defaultPfpPath = 'assets/images/icons/new_profile_icon.png';
+
+final double overAllPadding = 16.0;
+final double circleAvatarRadius = 75.0;
+final double height_10 = 10;
+final double underLineTabWidth = 3.0;
+final double iconBottomPosition = 5.0;
+final double iconLeftPosition = 215.0;
+final double containerHeightWidth = 40.0;
+
+final Color underLineColor = Color(0xFF4EABCC);
+
+final titleMessageStyle = TextStyle(
+  fontSize: 22.0,
+  fontFamily: 'Hind',
+  fontWeight: FontWeight.w600,
+  color: Color(0xFF1F1F1F),
+);
+
+final firstNameLastNameStyle = TextStyle(
+  fontSize: 20.0,
+  fontFamily: 'Hind',
+  fontWeight: FontWeight.w500,
+  color: Color(0xFF1F1F1F),
+);
+
+final usernameStyle = TextStyle(
+  fontSize: 18.0,
+  fontFamily: 'Hind',
+  fontWeight: FontWeight.w300,
+  color: Color(0x901F1F1F),
+);
+
+final tabButtonTextStyle = TextStyle(
+  fontSize: 15.0,
+  fontFamily: 'Hind',
+  fontWeight: FontWeight.w500,
+  color: Color(0xFF1F1F1F),
+);
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -13,29 +58,21 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+  late TabController tabController;
   File? profileImage;
   String username = "";
   String firstName = "";
   String lastName = "";
   bool isDarkMode = false;
   bool notificationsEnabled = false;
+  File? selectedImage;
+  late File imageFile;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    tabController = TabController(length: 3, vsync: this);
     fetchUserData();
-    pfpDisplay();
-  }
-
-  Future<void> pfpDisplay() async {
-    String? imagePath = await getSavedImagePath();
-    if (imagePath != null) {
-      setState(() {
-        profileImage = File(imagePath);
-      });
-    }
   }
 
   void fetchUserData() async {
@@ -47,83 +84,142 @@ class _SettingsPageState extends State<SettingsPage>
     });
   }
 
+  Future<void> pickProfileImage() async {
+    File? image = await pickImage();
+    if (image != null) {
+      selectedImage = image;
+
+      await saveProfileImage(image);
+      await saveProfileImageOnline(image);
+    }
+    setState(() {
+      profileImage = image;
+    });
+  }
+
+  Future<void> saveProfileImage(File image) async {
+    String? imagePath = await saveImage(image);
+
+    if (imagePath != null) {
+      print('Local profile image updated: $imagePath');
+    }
+  }
+
+  Future<void> saveProfileImageOnline(File image) async {
+    await uploadProfileImageToSupabase(image);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Account Settings"),
+        title: Text(
+          titleMessage,
+          style: titleMessageStyle,
+        ),
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.popAndPushNamed(
+              context,
+              '/ProfileScreen',
+            );
+          },
+        ),
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(overAllPadding),
             child: Column(
               children: [
-                CircleAvatar(
-                  radius: 80,
-                  backgroundColor: Colors.transparent,
-                  backgroundImage: profileImage != null
-                      ? FileImage(profileImage!)
-                      : const AssetImage(
-                              'assets/images/icons/new_profile_icon.png')
-                          as ImageProvider,
+                // GestureDetector(
+                //   onTap: pickProfileImage,
+                //   child: ProfileAvatar(
+                //     key: ValueKey(profileImage?.path ?? 'default'),
+                //     circleAvatarRadius: circleAvatarRadius,
+                //   ),
+                // ),
+                GestureDetector(
+                  onTap: pickProfileImage,
+                  child: Stack(
+                    children: [
+                      Center(
+                        child: ProfileAvatar(
+                            key: ValueKey(profileImage?.path ?? 'default'),
+                            circleAvatarRadius: circleAvatarRadius),
+                      ),
+                      Positioned(
+                        bottom: iconBottomPosition,
+                        left: iconLeftPosition,
+                        child: Container(
+                          height: containerHeightWidth,
+                          width: containerHeightWidth,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 2,
+                                offset: Offset(5, 5),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            Icons.edit_outlined,
+                            color: Color(0x901F1F1F),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: height_10),
                 Text(
                   "$firstName $lastName",
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: firstNameLastNameStyle,
                 ),
                 Text(
                   "@${username.toLowerCase()}",
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
+                  style: usernameStyle,
                 ),
               ],
             ),
           ),
           TabBar(
-            controller: _tabController,
-            tabs: const [
+            controller: tabController,
+            indicator: UnderlineTabIndicator(
+              borderSide:
+                  BorderSide(width: underLineTabWidth, color: underLineColor),
+            ),
+            tabs: [
               Tab(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("General"),
-                    Text(
-                      "Settings",
-                    ),
-                  ],
+                child: Text(
+                  generalTabButton,
+                  style: tabButtonTextStyle,
                 ),
               ),
               Tab(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Personal"),
-                    Text(
-                      "Info",
-                    ),
-                  ],
-                ),
-              ),
-              Tab(text: "Security"),
-              Tab(text: "Back Up"),
+                  child: Text(
+                personalInfoTabButton,
+                style: tabButtonTextStyle,
+              )),
+              Tab(
+                  child: Text(
+                securityTabButton,
+                style: tabButtonTextStyle,
+              )),
             ],
           ),
           Expanded(
             child: TabBarView(
-              controller: _tabController,
+              controller: tabController,
               children: [
                 generalTab(),
                 PersonalInfoScreen(),
                 SecurityTab(),
-                _backupTab(),
               ],
             ),
           ),
@@ -132,29 +228,9 @@ class _SettingsPageState extends State<SettingsPage>
     );
   }
 
-  Widget _backupTab() {
-    return ListView(
-      children: [
-        _settingsTile(
-            Icons.cloud_upload, "Back Up Data", "Sync your data to the cloud"),
-        _settingsTile(Icons.restore, "Restore Data", "Recover saved backups"),
-      ],
-    );
-  }
-
-  Widget _settingsTile(IconData icon, String title, String subtitle) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.blue),
-      title: Text(title),
-      subtitle: Text(subtitle),
-      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-      onTap: () {},
-    );
-  }
-
   @override
   void dispose() {
-    _tabController.dispose();
+    tabController.dispose();
     super.dispose();
   }
 }

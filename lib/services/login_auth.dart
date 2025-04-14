@@ -61,22 +61,26 @@ Future<String> loginAuthentication(
     await storage.updateSecureData('UserData', dataString);
     storage.updateSecureData('isLoginDone', 'true');
     storage.updateSecureData('isPinRequired', 'false');
+    storage.updateSecureData('isUserDetailDone', 'true');
 
     return 'true';
   } on FirebaseAuthException catch (e) {
     if (e.code == 'invalid-credential') {
       storage.updateSecureData('isLoginDone', 'false');
       storage.updateSecureData('isPinRequired', 'false');
+      storage.updateSecureData('isUserDetailDone', 'false');
 
       return "invalidCredentials";
     } else if (e.code == 'invalid-email') {
       storage.updateSecureData('isLoginDone', 'false');
       storage.updateSecureData('isPinRequired', 'false');
+      storage.updateSecureData('isUserDetailDone', 'false');
 
       return "invalidEmailSyntax";
     }
     storage.updateSecureData('isLoginDone', 'false');
     storage.updateSecureData('isPinRequired', 'false');
+    storage.updateSecureData('isUserDetailDone', 'false');
 
     return "unexpectedError";
   }

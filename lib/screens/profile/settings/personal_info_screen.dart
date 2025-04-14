@@ -1,9 +1,38 @@
 import 'package:chronicles/screens/profile/settings/settings_screen.dart';
+import 'package:chronicles/utilities/components/buttons/infinite_width_button.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../services/secure_storage.dart';
 import '../../../utilities/data/gender.dart';
 import '../../../utilities/data/user_auth_data.dart';
+
+final double verticalButtonMargin = 20.0;
+final double buttonHeight = 50.0;
+final double horizontalMargin = 0.0;
+final Color signUpTextColor = Color(0xFFFFFFFF);
+final Color loginRegisterHighlightColor = Color(0xFF35879F);
+final Color loginRegisterSplashColor = Color(0xFF6BC9E2);
+
+final textFieldStyle = TextStyle(
+  fontSize: 16.0,
+  fontFamily: "Hind",
+  fontWeight: FontWeight.w500,
+);
+
+final labelStyle = TextStyle(
+  color: Color(0xFF80858D),
+  fontFamily: "Hind",
+  fontWeight: FontWeight.w500,
+);
+
+TextStyle buttonLabelTextStyle({required Color textColor}) {
+  return TextStyle(
+    color: textColor,
+    fontSize: 17,
+    fontWeight: FontWeight.w400,
+    height: 0.5,
+  );
+}
 
 class PersonalInfoScreen extends StatefulWidget {
   @override
@@ -27,6 +56,18 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   void initState() {
     super.initState();
     _initializeUserData();
+
+    _firstNameController.addListener(() {
+      setState(() {
+        _isChanged = true;
+      });
+    });
+
+    _lastNameController.addListener(() {
+      setState(() {
+        _isChanged = true;
+      });
+    });
   }
 
   Future<void> _initializeUserData() async {
@@ -47,10 +88,28 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     if (userDoc.exists) {
       Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
 
-      int genderIndex = userData['gender'] ?? -1;
+      int genderIndex;
+      var genderValue = userData['gender'];
+
+      if (genderValue is int) {
+        genderIndex = genderValue;
+      } else if (genderValue is String) {
+        genderIndex = int.tryParse(genderValue) ?? -1;
+      } else {
+        genderIndex = -1;
+      }
 
       if (genderIndex < 0 || genderIndex >= Gender.values.length) {
         genderIndex = Gender.values.length - 1;
+      }
+
+      var dobValue = userData['dob'];
+      int? dobMillis;
+
+      if (dobValue is int) {
+        dobMillis = dobValue;
+      } else if (dobValue is String) {
+        dobMillis = int.tryParse(dobValue);
       }
 
       setState(() {
@@ -59,8 +118,8 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         _lastNameController.text = userData['lastname'] ?? '';
         _emailController.text = userData['email'] ?? '';
         _selectedGender = Gender.values[genderIndex].name;
-        _dob = userData['dob'] != null
-            ? DateTime.fromMillisecondsSinceEpoch(userData['dob'])
+        _dob = dobMillis != null
+            ? DateTime.fromMillisecondsSinceEpoch(dobMillis)
             : null;
       });
     }
@@ -110,107 +169,160 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          _buildTextField("Username", _usernameController),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                  child: _buildTextField("First Name", _firstNameController)),
-              const SizedBox(width: 12),
-              Expanded(
-                  child: _buildTextField("Last Name", _lastNameController)),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _buildTextField("Email", _emailController),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _buildDropdown(
-                  "Gender",
-                  _selectedGender,
-                  ["Male", "Female", "Other", "Prefer not to say"],
-                ),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _buildTextField("Username", _usernameController, isReadOnly: true),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                    child: _buildTextField("First Name", _firstNameController)),
+                const SizedBox(width: 12),
+                Expanded(
+                    child: _buildTextField("Last Name", _lastNameController)),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _buildTextField("Email", _emailController, isReadOnly: true),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                    child: _buildDropdown("Gender", _selectedGender,
+                        ["Male", "Female", "Other", "Prefer not to say"])),
+                const SizedBox(width: 12),
+                Expanded(child: _buildDatePicker("DOB")),
+              ],
+            ),
+            const SizedBox(height: 20),
+            //onPressed:
+            InfiniteRoundWidthButton(
+              onPress: _isChanged ? _saveChanges : null,
+              buttonLabel: Text(
+                "Save Changes",
+                style: buttonLabelTextStyle(textColor: signUpTextColor),
               ),
-              const SizedBox(width: 12),
-              Expanded(child: _buildDatePicker("DOB")),
-            ],
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: _isChanged ? _saveChanges : null,
-            child: const Text("Save Changes"),
-          ),
-        ],
-      ),
-    );
+              verticalMargin: verticalButtonMargin,
+              height: buttonHeight,
+              highlightColor: loginRegisterHighlightColor,
+              splashColor: loginRegisterSplashColor,
+              horizontalMargin: horizontalMargin,
+            ),
+          ],
+        ));
   }
 
-  Widget _buildTextField(String label, TextEditingController controller) {
+  Widget _buildTextField(String label, TextEditingController controller,
+      {bool isReadOnly = false}) {
     return TextField(
       controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+      readOnly: isReadOnly,
+      style: textFieldStyle.copyWith(
+        color: isReadOnly ? Color(0xFF9EA1A7) : Colors.black,
       ),
-      onChanged: (value) => setState(() => _isChanged = true),
+      decoration: inputDecoration(label),
     );
   }
 
   Widget _buildDropdown(String label, String value, List<String> options) {
     if (!options.contains(value)) value = "Other";
-
-    return DropdownButtonFormField<String>(
-      value: value,
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
-      ),
-      items: options.map((String option) {
-        return DropdownMenuItem<String>(
-          value: option,
-          child: Text(option),
-        );
-      }).toList(),
-      onChanged: (newValue) {
-        setState(() {
-          _selectedGender = newValue!;
-          _isChanged = true;
-        });
-      },
-      icon: const Icon(Icons.keyboard_arrow_down_sharp, size: 14.9),
-    );
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: DropdownButtonFormField<String>(
+          value: value,
+          decoration: inputDecoration(label),
+          style: const TextStyle(
+            fontSize: 16,
+            fontFamily: "Hind",
+            fontWeight: FontWeight.w500,
+            color: Colors.black,
+          ),
+          items: options.map((String option) {
+            return DropdownMenuItem<String>(
+              value: option,
+              child: Text(option),
+            );
+          }).toList(),
+          onChanged: (newValue) {
+            setState(() {
+              _selectedGender = newValue!;
+              _isChanged = true;
+            });
+          },
+          icon: const Icon(Icons.keyboard_arrow_down_sharp,
+              size: 20, color: Color(0xFF1F1F1F)),
+        ));
   }
 
   Widget _buildDatePicker(String label) {
-    return TextFormField(
-      readOnly: true,
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
-        suffixIcon: const Icon(Icons.calendar_today, size: 18),
-      ),
-      onTap: () async {
-        DateTime? pickedDate = await showDatePicker(
-          context: context,
-          initialDate: _dob ?? DateTime(2000, 1, 1),
-          firstDate: DateTime(1900),
-          lastDate: DateTime.now(),
-        );
-        if (pickedDate != null) {
-          setState(() {
-            _dob = pickedDate;
-            _isChanged = true;
-          });
-        }
-      },
-      controller: TextEditingController(
-        text: _dob != null ? "${_dob!.day}/${_dob!.month}/${_dob!.year}" : "",
-      ),
-    );
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: TextFormField(
+          readOnly: true,
+          style: const TextStyle(
+            fontSize: 16,
+            fontFamily: "Hind",
+            fontWeight: FontWeight.w500,
+          ),
+          decoration: inputDecoration(
+            label,
+            suffixIcon: const Icon(Icons.calendar_today,
+                size: 18, color: Color(0xFF1F1F1F)),
+          ),
+          onTap: () async {
+            DateTime? pickedDate = await showDatePicker(
+              context: context,
+              initialDate: _dob ?? DateTime(2000, 1, 1),
+              firstDate: DateTime(1900),
+              lastDate: DateTime.now(),
+            );
+            if (pickedDate != null) {
+              setState(() {
+                _dob = pickedDate;
+                _isChanged = true;
+              });
+            }
+          },
+          controller: TextEditingController(
+            text:
+                _dob != null ? "${_dob!.day}/${_dob!.month}/${_dob!.year}" : "",
+          ),
+        ));
   }
+}
+
+InputDecoration inputDecoration(String label, {Widget? suffixIcon}) {
+  return InputDecoration(
+    labelText: label,
+    labelStyle: const TextStyle(
+      color: Color(0xFF80858D),
+      fontFamily: "Hind",
+      fontWeight: FontWeight.w500,
+    ),
+    filled: true,
+    fillColor: Color(0xFFF7F8FA),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(
+        color: Color(0xFFDDDFE5),
+        width: 1.2,
+      ),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(
+        color: Color(0xFFDDDFE5),
+        width: 1.2,
+      ),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(
+        color: Color(0xFFDDDFE5),
+        width: 1.2,
+      ),
+    ),
+    suffixIcon: suffixIcon,
+  );
 }

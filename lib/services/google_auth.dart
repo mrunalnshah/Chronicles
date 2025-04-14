@@ -44,6 +44,7 @@ Future<bool> isGoogleAuthenticationDone(BuildContext context) async {
 
     String username;
     int nextIndex;
+    bool isFirstTime = !Doc.exists;
 
     if (user == null) {
       return false;
@@ -91,6 +92,8 @@ Future<bool> isGoogleAuthenticationDone(BuildContext context) async {
 
     storage.updateSecureData('isLoginDone', 'true');
     storage.updateSecureData('isPinRequired', 'false');
+    await storage.updateSecureData(
+        'isUserDetailDone', isFirstTime ? 'false' : 'true');
 
     String dataString = data.toJson();
     await storage.updateSecureData('UserData', dataString);

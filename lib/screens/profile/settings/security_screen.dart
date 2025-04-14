@@ -5,6 +5,19 @@ import '../../../services/secure_storage.dart';
 import '../../../utilities/components/switch/custom_switch.dart';
 import '../../auth/change_password.dart';
 
+final String setPinButtonText = "Enable Pin Login";
+final String changePasswordButtonText = "Change Password";
+final String aboutUsButtonText = "About Us";
+final String resetButtonText = "Reset to Defaults";
+final Color iconColor = Color(0xFF4EABCC);
+
+final buttonTextStyle = TextStyle(
+  fontSize: 15.0,
+  fontFamily: 'Hind',
+  fontWeight: FontWeight.w500,
+  color: Color(0xFF1F1F1F),
+);
+
 class SecurityTab extends StatefulWidget {
   @override
   _SecurityTabState createState() => _SecurityTabState();
@@ -15,20 +28,31 @@ class _SecurityTabState extends State<SecurityTab> {
   String? _pin;
   final SecureStorage storage = SecureStorage();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool isGoogleUser = false;
 
   @override
   void initState() {
     super.initState();
     _loadPinLoginStatus();
+    checkGoogleUser();
   }
 
   Future<void> _loadPinLoginStatus() async {
     String? value = await storage.readSecureData('isPinRequired');
-    print("Loaded isPinRequired: $value");
 
-    setState(() {
-      _isPinLoginEnabled = value == 'true';
-    });
+    if (mounted) {
+      setState(() {
+        _isPinLoginEnabled = value == 'true';
+      });
+    }
+  }
+
+  Future<void> checkGoogleUser() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      isGoogleUser = user.providerData
+          .any((provider) => provider.providerId == 'google.com');
+    }
   }
 
   @override
@@ -36,8 +60,11 @@ class _SecurityTabState extends State<SecurityTab> {
     return ListView(
       children: [
         ListTile(
-          leading: const Icon(Icons.fingerprint, color: Colors.blue),
-          title: const Text("Enable PIN Login"),
+          leading: Icon(Icons.fingerprint, color: iconColor),
+          title: Text(
+            setPinButtonText,
+            style: buttonTextStyle,
+          ),
           contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
           trailing: CustomSwitch(
               value: _isPinLoginEnabled,
@@ -64,19 +91,26 @@ class _SecurityTabState extends State<SecurityTab> {
             () => _verifyPassword(context),
           ),
         ],
-        _securityTile(
-            Icons.password, "Change Password", () => changePassword(context)),
+        if (!isGoogleUser) ...[
+          _securityTile(Icons.password, changePasswordButtonText,
+              () => changePassword(context)),
+        ] else ...[
+          _securityTile(Icons.password, changePasswordButtonText, null,
+              isDisabled: true),
+        ],
       ],
     );
   }
 
-  Widget _securityTile(IconData icon, String title, VoidCallback? onTap) {
+  Widget _securityTile(IconData icon, String title, VoidCallback? onTap,
+      {bool isDisabled = false}) {
     return ListTile(
-      leading: Icon(icon, color: Colors.blue),
+      leading: Icon(icon, color: iconColor),
       title: Text(title,
-          style: TextStyle(color: onTap != null ? Colors.black : Colors.grey)),
+          style: buttonTextStyle.copyWith(
+              color: onTap != null ? Colors.black : Colors.grey)),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-      onTap: onTap,
+      onTap: isDisabled ? null : onTap, // Disable the tap if isDisabled is true
     );
   }
 
@@ -163,7 +197,7 @@ class _SecurityTabState extends State<SecurityTab> {
 
                   if (isVerified) {
                     Navigator.pop(context);
-                    await showPinPrompt(context); // Rewrites PIN
+                    await showPinPrompt(context);
                   } else {
                     authAlert(
                       context,
@@ -211,7 +245,7 @@ class _SecurityTabState extends State<SecurityTab> {
                 if (enteredPassword.isNotEmpty) {
                   bool isVerified = await _authenticateUser(enteredPassword);
                   if (isVerified) {
-                    Navigator.pop(context); // Close the dialog
+                    Navigator.pop(context);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -226,11 +260,11 @@ class _SecurityTabState extends State<SecurityTab> {
                   }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Enter your old password")),
+                    SnackBar(content: Text("Enter your old password")),
                   );
                 }
               },
-              child: const Text("OK"),
+              child: Text("OK"),
             ),
           ],
         );

@@ -25,9 +25,8 @@ import '../../utilities/components/calender/calendar.dart';
 
 // Variable Values and TextStyles
 final double scrolledUnderElevationValue = 0.5;
+final double circleAvatarRadius = 24.0;
 final double appBarTopPadding = 8.0;
-final double profileIconWidth = 56.0;
-final double profileIconHeight = 56.0;
 final double bodyTopPadding = 5.0;
 final double bodyBottomPadding = 20.0;
 final double bodyLeftPadding = 15.0;
@@ -189,7 +188,9 @@ class _DashboardState extends State<Dashboard> {
                     ),
                   );
                 },
-                child: ProfileAvatar(),
+                child: ProfileAvatar(
+                  circleAvatarRadius: 24,
+                ),
               ),
             ],
           ),

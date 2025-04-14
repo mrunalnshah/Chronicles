@@ -2,6 +2,29 @@ import 'package:flutter/material.dart';
 import '../../../services/friends_services.dart';
 import '../../../utilities/components/List_Tile/friends_list_tile.dart';
 
+final String searchBarHintText = 'Search by Username';
+final String emptyFriendListText = 'No friends found';
+final String pandaImagePath = 'assets/images/logo/panda_image.jpg';
+
+final double verticalOverAllPadding = 5.0;
+final double horizontalOverAllPadding = 3.0;
+final double searchBarOverAllPadding = 4.0;
+final double searchBarHeight = 50.0;
+final double rightPaddingInSearchBar = 10.0;
+final double searchBarBorderRadius = 25.0;
+final double pandaIconHeight = 150.0;
+final double spaceBetweenPandaIconAndText = 16.0;
+
+final Color searchBarColor = Colors.white;
+final Color searchBarIconColor = Colors.grey;
+
+final emptyFriendListTextStyle = TextStyle(
+  fontSize: 16.0,
+  fontFamily: 'Hind',
+  fontWeight: FontWeight.w500,
+  color: Color(0xFF1F1F1F),
+);
+
 class FriendsListPage extends StatefulWidget {
   const FriendsListPage({super.key});
 
@@ -10,28 +33,27 @@ class FriendsListPage extends StatefulWidget {
 }
 
 class _FriendsListPageState extends State<FriendsListPage> {
-  final TextEditingController _searchController = TextEditingController();
+  final TextEditingController searchBarController = TextEditingController();
   List<Map<String, String>> friends = [];
   List<Map<String, String>> filteredFriends = [];
   final String defaultProfileImage = "assets/images/icons/new_profile_icon.png";
-  final FriendServices _friendServices = FriendServices();
+  final FriendServices friendServices = FriendServices();
 
   @override
   void initState() {
     super.initState();
-    _fetchFriends();
+    loadFriends();
   }
 
-  Future<void> _fetchFriends() async {
-    List<Map<String, String>> friendsList =
-        await _friendServices.fetchFriends();
+  Future<void> loadFriends() async {
+    List<Map<String, String>> friendsList = await friendServices.fetchFriends();
     setState(() {
       friends = friendsList;
       filteredFriends = friendsList;
     });
   }
 
-  void _searchFriends(String query) {
+  void searchFriendsByUsername(String query) {
     setState(() {
       filteredFriends = friends
           .where((friend) =>
@@ -40,35 +62,51 @@ class _FriendsListPageState extends State<FriendsListPage> {
     });
   }
 
-  Future<void> _removeFriend(String friendId) async {
-    await _friendServices.removeFriend(friendId);
-    _fetchFriends();
+  Future<void> removeFriends(String friendId) async {
+    await friendServices.removeFriend(friendId);
+    loadFriends();
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 3.0, vertical: 5.0),
+      padding: EdgeInsets.symmetric(
+          horizontal: horizontalOverAllPadding,
+          vertical: verticalOverAllPadding),
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 4.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: "Search friends by username...",
-                prefixIcon: const Icon(Icons.search),
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            padding: EdgeInsets.all(searchBarOverAllPadding),
+            child: SizedBox(
+              height: searchBarHeight,
+              child: SearchBar(
+                controller: searchBarController,
+                hintText: searchBarHintText,
+                trailing: [
+                  Padding(
+                    padding: EdgeInsets.only(right: rightPaddingInSearchBar),
+                    child: Icon(Icons.search, color: searchBarIconColor),
+                  ),
+                ],
+                onChanged: searchFriendsByUsername,
+                padding: WidgetStateProperty.all(
+                  EdgeInsets.symmetric(horizontal: 16),
+                ),
+                backgroundColor: WidgetStateProperty.all(searchBarColor),
+                shape: WidgetStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(searchBarBorderRadius),
+                  ),
+                ),
+                elevation: WidgetStateProperty.all(2),
               ),
-              onChanged: _searchFriends,
             ),
           ),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 3.0),
               child: filteredFriends.isEmpty
-                  ? _emptyState("No friends found.")
+                  ? emptyFriendList(emptyFriendListText)
                   : ListView.builder(
                       itemCount: filteredFriends.length,
                       itemBuilder: (context, index) {
@@ -80,7 +118,7 @@ class _FriendsListPageState extends State<FriendsListPage> {
                           fullName:
                               "${friend["firstName"]} ${friend["lastName"]}"
                                   .trim(),
-                          onRemove: _removeFriend,
+                          onRemove: removeFriends,
                         );
                       },
                     ),
@@ -91,19 +129,19 @@ class _FriendsListPageState extends State<FriendsListPage> {
     );
   }
 
-  Widget _emptyState(String message) {
+  Widget emptyFriendList(String message) {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Image.asset(
-            'assets/images/logo/panda_image.jpg',
-            height: 150,
+            pandaImagePath,
+            height: pandaIconHeight,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: spaceBetweenPandaIconAndText),
           Text(
             message,
-            style: const TextStyle(fontSize: 16, color: Colors.black54),
+            style: emptyFriendListTextStyle,
           ),
         ],
       ),
