@@ -81,6 +81,7 @@ void twoButtonsAuthAlert(
               CustomActionButton(
                 label: cancelButtonText,
                 onPressed: () {
+                  Navigator.pop(context);
                   if (onCancel != null) {
                     onCancel();
                   }

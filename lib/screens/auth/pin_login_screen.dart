@@ -4,35 +4,25 @@
 * Description      : This file has code for the Pin Login Screen
 */
 
+import 'package:chronicles/utilities/components/alerts/two_buttons_auth_alert.dart';
 import 'package:chronicles/utilities/components/keyboard/blue_numeric_keyboard.dart';
-
 import 'package:chronicles/utilities/components/textfields/otp_display_textfield.dart';
-
 import 'package:flutter/material.dart';
+import '../../services/secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../../services/secure_storage.dart';
-
 final String passwordResetText = 'Pin Login';
-
 final String normalMessageTitleText = 'Enter your 4-digit Pin';
 final String normalMessageText = "Can’t remember PIN? ";
 final String loginButtonText = "Login again";
 
 final double bodyLeftRightPadding = 25.0;
-
 final double bodyTopPadding = 160.0;
-
 final double iconContainerSize = 90.0;
-
 final double containerRadius = 12.0;
-
 final double iconSize = 80.0;
-
 final double titleTopPadding = 20.0;
-
 final double textFieldTopPadding = 30.0;
-
 final double textFieldBottomPadding = 15.0;
 
 final Color borderColor = Color(0xFFDDDFE5);
@@ -167,17 +157,23 @@ class _PinLoginScreen extends State<PinLoginScreen> {
                       style: accountExistStyle,
                     ),
                     GestureDetector(
-                      onTap: () async {
-                        SecureStorage storage = SecureStorage();
-                        GoogleSignIn googleSignIn = GoogleSignIn();
+                      onTap: () {
+                        twoButtonsAuthAlert(context,
+                            message:
+                                "You’re about to sign out. Do you want to proceed?",
+                            cancelButtonText: "Cancel",
+                            proceedButtonText: "Log Out", onProceed: () async {
+                          SecureStorage storage = SecureStorage();
 
-                        await googleSignIn.signOut();
+                          GoogleSignIn googleSignIn = GoogleSignIn();
 
-                        storage.updateSecureData('isLoginDone', 'false');
-                        storage.updateSecureData('isPinRequired', 'false');
-                        storage.updateSecureData('isUserDetailDone', 'true');
+                          await googleSignIn.signOut();
+                          storage.updateSecureData('isLoginDone', 'false');
+                          storage.updateSecureData('isPinRequired', 'false');
+                          storage.updateSecureData('isUserDetailDone', 'true');
 
-                        Navigator.popAndPushNamed(context, '/WelcomeScreen');
+                          Navigator.popAndPushNamed(context, '/WelcomeScreen');
+                        });
                       },
                       child: Text(
                         loginButtonText,

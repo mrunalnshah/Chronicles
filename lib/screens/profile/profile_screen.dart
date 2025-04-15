@@ -333,9 +333,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       message: "Are you sure you want to logout?",
                       cancelButtonText: "Cancel",
                       proceedButtonText: "Logout",
-                      onCancel: () {
-                        Navigator.pop(context);
-                      },
                       onProceed: () async {
                         Navigator.pushNamedAndRemoveUntil(
                           context,

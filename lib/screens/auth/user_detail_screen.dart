@@ -219,9 +219,6 @@ class _UsernameScreenState extends State<UsernameScreen> {
                             storage.updateSecureData(
                                 'isUserDetailDone', 'true');
                           },
-                          onCancel: () {
-                            Navigator.pop(context);
-                          },
                         );
                       } else {
                         twoButtonsAuthAlert(
@@ -236,9 +233,6 @@ class _UsernameScreenState extends State<UsernameScreen> {
                             usernameCheck(context, checkUsername);
                             storage.updateSecureData(
                                 'isUserDetailDone', 'true');
-                          },
-                          onCancel: () {
-                            Navigator.pop(context);
                           },
                         );
                       }
