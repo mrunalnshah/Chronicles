@@ -1,7 +1,7 @@
 /*
 * File Name        : file_database.dart
 * Group            : trOlsz Group
-* Description      : This file is has code for all text editor aka
+* Description      : This file has code for all text editor aka
 *                    diary related file database operations like Saving a file metadata,
 *                    loading a file metadata, deleting a file metadata for
 *                    using without reading all file contents. (SQFLITE)
@@ -11,7 +11,6 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:chronicles/utilities/components/text_editor/file_data_class.dart';
-
 import '../utilities/data/user_auth_data.dart';
 
 class FileDatabase {
@@ -44,27 +43,26 @@ class FileDatabase {
 
   Future<Database> getDatabase() async {
     String userId = await UserDataFetcher().fetchUID();
-
     Directory appDocDir = await _getAppDocumentsDirectory();
-
     final dbDirPath = await getDatabasesPath();
     final dbPath = '${appDocDir.path}/$userId/$dbDirPath/file_database.db';
+
     final database = await openDatabase(
       dbPath,
       version: 1,
       onCreate: (db, version) {
         db.execute(
           '''
-        CREATE TABLE $_fileTableName (
-          $_fileIdColumnName INTEGER PRIMARY KEY,
-          $_fileEpochValue INTEGER NOT NULL,
-          $_fileTitleColumnName TEXT NOT NULL,
-          $_fileContentColumnName TEXT NOT NULL,
-          $_fileLastModifiedColumnName TEXT NOT NULL,
-          $_fileCreatedColumnName TEXT NOT NULL,
-          $_fileReactionColumnName TEXT NOT NULL
-        );
-        ''',
+          CREATE TABLE $_fileTableName (
+            $_fileIdColumnName INTEGER PRIMARY KEY,
+            $_fileEpochValue INTEGER NOT NULL,
+            $_fileTitleColumnName TEXT NOT NULL,
+            $_fileContentColumnName TEXT NOT NULL,
+            $_fileLastModifiedColumnName TEXT NOT NULL,
+            $_fileCreatedColumnName TEXT NOT NULL,
+            $_fileReactionColumnName TEXT NOT NULL
+          );
+          ''',
         );
       },
     );
@@ -102,14 +100,14 @@ class FileDatabase {
     List<FileData> fileList = data
         .map(
           (e) => FileData(
-            millisecondSinceEpoch: e["epochvalue"] as int,
-            title: e["title"] as String,
-            content: e["content"] as String,
-            modifiedAt: e["modified"] as String,
-            createdAt: e["created"] as String,
-            reactionType: e["reaction"] as String,
-          ),
-        )
+        millisecondSinceEpoch: e["epochvalue"] as int,
+        title: e["title"] as String,
+        content: e["content"] as String,
+        modifiedAt: e["modified"] as String,
+        createdAt: e["created"] as String,
+        reactionType: e["reaction"] as String,
+      ),
+    )
         .toList();
     return fileList;
   }
@@ -126,14 +124,14 @@ class FileDatabase {
     List<FileData> fileList = data
         .map(
           (e) => FileData(
-            millisecondSinceEpoch: e["epochvalue"] as int,
-            title: e["title"] as String,
-            content: e["content"] as String,
-            modifiedAt: e["modified"] as String,
-            createdAt: e["created"] as String,
-            reactionType: e["reaction"] as String,
-          ),
-        )
+        millisecondSinceEpoch: e["epochvalue"] as int,
+        title: e["title"] as String,
+        content: e["content"] as String,
+        modifiedAt: e["modified"] as String,
+        createdAt: e["created"] as String,
+        reactionType: e["reaction"] as String,
+      ),
+    )
         .toList();
 
     return fileList;
@@ -150,14 +148,14 @@ class FileDatabase {
     List<FileData> fileList = data
         .map(
           (e) => FileData(
-            millisecondSinceEpoch: e["epochvalue"] as int,
-            title: e["title"] as String,
-            content: e["content"] as String,
-            modifiedAt: e["modified"] as String,
-            createdAt: e["created"] as String,
-            reactionType: e["reaction"] as String,
-          ),
-        )
+        millisecondSinceEpoch: e["epochvalue"] as int,
+        title: e["title"] as String,
+        content: e["content"] as String,
+        modifiedAt: e["modified"] as String,
+        createdAt: e["created"] as String,
+        reactionType: e["reaction"] as String,
+      ),
+    )
         .toList();
 
     return fileList;
@@ -191,5 +189,21 @@ class FileDatabase {
       where: '$_fileEpochValue = ?',
       whereArgs: [id],
     );
+  }
+
+  Future<bool> hasUserWrittenADiary() async {
+    final db = await database;
+    final count = Sqflite.firstIntValue(
+      await db.rawQuery('SELECT COUNT(*) FROM $_fileTableName'),
+    );
+    return (count ?? 0) > 0;
+  }
+
+  Future<int> getDiaryCount() async {
+    final db = await database;
+    final count = Sqflite.firstIntValue(
+      await db.rawQuery('SELECT COUNT(*) FROM $_fileTableName'),
+    );
+    return count ?? 0;
   }
 }

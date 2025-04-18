@@ -15,6 +15,7 @@ import 'package:chronicles/services/secure_storage.dart';
 import 'package:chronicles/utilities/components/buttons/custom_textbutton.dart';
 import 'package:chronicles/utilities/data/app_policy/help.dart';
 import 'package:chronicles/utilities/data/app_policy/privacy_policy.dart';
+import 'package:chronicles/screens/auth/badges_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:chronicles/utilities/data/user_auth_data.dart';
 import 'package:chronicles/services/pfp_services.dart';
@@ -135,7 +136,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Navigator.pushNamedAndRemoveUntil(
               context,
               '/Dashboard',
-              (Route<dynamic> route) => false,
+                  (Route<dynamic> route) => false,
             );
           },
         ),
@@ -212,8 +213,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       backgroundImage: profileImage != null
                           ? FileImage(profileImage!)
                           : AssetImage(
-                                  'assets/images/icons/new_profile_icon.png')
-                              as ImageProvider,
+                          'assets/images/icons/new_profile_icon.png')
+                      as ImageProvider,
                     ),
                   ),
                 ),
@@ -292,7 +293,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: CustomTextButton(
                         text: optionBadgeText,
                         icon: Icons.badge_outlined,
-                        onPressed: () {},
+                        onPressed: ()
+                        {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BadgesScreen(),
+                            ),
+                          );
+                        },
                       ),
                     ),
                     Padding(
@@ -333,7 +342,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Navigator.pushNamedAndRemoveUntil(
                       context,
                       '/WelcomeScreen',
-                      (Route<dynamic> route) => false,
+                          (Route<dynamic> route) => false,
                     );
                     SecureStorage storage = SecureStorage();
                     GoogleSignIn googleSignIn = GoogleSignIn();
